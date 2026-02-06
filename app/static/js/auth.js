@@ -46,3 +46,35 @@ document.getElementById("backendBtn").addEventListener("click", async () => {
   output.textContent =
     "Backend response:\n" + JSON.stringify(data, null, 2);
 });
+
+async function authFetch(url, body) {
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Login first");
+    return;
+  }
+
+  const token = await user.getIdToken();
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+    body: JSON.stringify(body),
+  });
+
+  const data = await res.json();
+  output.textContent = JSON.stringify(data, null, 2);
+}
+
+document.getElementById("createTeamBtn").addEventListener("click", () => {
+  const name = document.getElementById("teamName").value;
+  authFetch("/team/create", { name });
+});
+
+document.getElementById("joinTeamBtn").addEventListener("click", () => {
+  const invite_code = document.getElementById("inviteCode").value;
+  authFetch("/team/join", { invite_code });
+});

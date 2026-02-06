@@ -2,6 +2,7 @@ from flask import Flask
 from .config import Config
 from .extensions import db, migrate,init_firebase
 from app.auth.routes import auth_bp
+from app.team.routes import team_bp
 
 
 def create_app():
@@ -15,6 +16,7 @@ def create_app():
     init_firebase()
     
     app.register_blueprint(auth_bp)
+    app.register_blueprint(team_bp)
     
     #test db connection
     # with app.app_context():
