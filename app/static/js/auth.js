@@ -1,0 +1,48 @@
+// Firebase config injected from backend
+const firebaseConfig = window.__FIREBASE_CONFIG__;
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+const output = document.getElementById("output");
+
+document.getElementById("loginBtn").addEventListener("click", async () => {
+  try {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    const result = await auth.signInWithPopup(provider);
+
+    output.textContent =
+      "Logged in (Firebase):\n" +
+      JSON.stringify(
+        {
+          uid: result.user.uid,
+          email: result.user.email,
+          name: result.user.displayName,
+        },
+        null,
+        2
+      );
+  } catch (err) {
+    output.textContent = "Login failed:\n" + err.message;
+  }
+});
+
+document.getElementById("backendBtn").addEventListener("click", async () => {
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Login first");
+    return;
+  }
+
+  const token = await user.getIdToken();
+
+  const res = await fetch("/auth/me", {
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  });
+
+  const data = await res.json();
+  output.textContent =
+    "Backend response:\n" + JSON.stringify(data, null, 2);
+});

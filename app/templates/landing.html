@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Auth Test{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<h1>Firebase ↔ Flask Auth Test</h1>
+
+<div class="controls">
+  <button id="loginBtn">Login with Google</button>
+  <button id="backendBtn">Call Backend</button>
+</div>
+
+<pre id="output">Waiting...</pre>
+{% endblock %}
+
+{% block js %}
+<!-- Inject Firebase config safely -->
+<script>
+  window.__FIREBASE_CONFIG__ = {{ firebase_config | tojson }};
+</script>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+<!-- App logic -->
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}
