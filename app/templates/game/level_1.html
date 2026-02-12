@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Level 1 – Genesis{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>LEVEL 1: Genesis</h1>
+
+    <p>
+        An event occurred on January 1st, 2026.
+        Only those present at the moment may see what was revealed.
+    </p>
+
+    <button id="checkEnvironment">Check the Signal</button>
+
+    <div id="passwordBox" style="display:none;">
+        <h3>Password:</h3>
+        <p id="revealedPassword"></p>
+    </div>
+
+    <hr>
+
+    <form id="submitForm">
+        <input type="text" id="answerInput" placeholder="Enter password">
+        <button type="submit">Submit</button>
+    </form>
+
+    <pre id="resultBox"></pre>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="{{ url_for('static', filename='js/level1.js') }}"></script>
+{% endblock %}

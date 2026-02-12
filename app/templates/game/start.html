@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Game Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Welcome to the Hunt</h1>
+
+    <p><strong>Team:</strong> {{ team.name }}</p>
+    <p><strong>Current Level:</strong> {{ level.level_number }}</p>
+
+    <a href="{{ url_for('game.level', level_number=level.level_number) }}">
+        <button>Enter Level {{ level.level_number }}</button>
+    </a>
+</div>
+{% endblock %}

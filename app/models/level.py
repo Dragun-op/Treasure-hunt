@@ -12,5 +12,5 @@ class Level(db.Model):
     unlock_type = db.Column(db.String(50))  # time | answer | date | system_clock
     unlock_value = db.Column(db.JSON)
 
-    answer_hash = db.Column(db.String(256))
+    answer_hashes = db.Column(db.JSON, nullable=False, default=list)
     is_active = db.Column(db.Boolean, default=True)

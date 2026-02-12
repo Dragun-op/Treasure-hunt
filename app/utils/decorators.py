@@ -1,43 +1,49 @@
 from functools import wraps
-from flask import request, g, abort
-from firebase_admin import auth as firebase_auth
+from flask import request, g, session
+from firebase_admin import auth
 from app.models import User
 from app.extensions import db
 
-def firebase_required(fn):
-    @wraps(fn)
-    def wrapper(*args, **kwargs):
+
+def firebase_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+
+        # ---- 1 Check existing session first ----
+        user_id = session.get("user_id")
+        if user_id:
+            user = User.query.get(user_id)
+            if user:
+                g.current_user = user
+                return f(*args, **kwargs)
+
+        # ---- 2️ If no session, check Authorization header ----
         auth_header = request.headers.get("Authorization")
 
         if not auth_header or not auth_header.startswith("Bearer "):
-            abort(401, "Missing Firebase token")
+            return "Missing Firebase token", 401
 
         token = auth_header.split(" ")[1]
 
         try:
-            decoded = firebase_auth.verify_id_token(token)
+            decoded_token = auth.verify_id_token(token)
         except Exception:
-            abort(401, "Invalid Firebase token")
+            return "Invalid Firebase token", 401
 
-        firebase_uid = decoded["uid"]
-        email = decoded.get("email")
-        name = decoded.get("name")
+        firebase_uid = decoded_token.get("uid")
 
-        # AUTO-CREATE USER
+        if not firebase_uid:
+            return "Invalid Firebase token payload", 401
+
         user = User.query.filter_by(firebase_uid=firebase_uid).first()
 
         if not user:
-            user = User(
-                firebase_uid=firebase_uid,
-                email=email,
-                name=name,
-            )
-            db.session.add(user)
-            db.session.commit()
+            return "User not found", 401
 
+        # ---- 3️ Create session ----
+        session["user_id"] = user.id
         g.current_user = user
-        g.firebase_claims = decoded
 
-        return fn(*args, **kwargs)
+        return f(*args, **kwargs)
 
-    return wrapper
+    return decorated

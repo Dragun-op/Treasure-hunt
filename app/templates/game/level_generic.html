@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Level {{ level.level_number }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Level {{ level.level_number }}</h1>
+
+    <p>{{ level.description }}</p>
+</div>
+{% endblock %}

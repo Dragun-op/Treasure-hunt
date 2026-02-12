@@ -1,9 +1,11 @@
-from flask import Flask
+from flask import Flask,render_template
 from .config import Config
 from .extensions import db, migrate,init_firebase
+from app.cli import register_cli
+
 from app.auth.routes import auth_bp
 from app.team.routes import team_bp
-
+from app.game.routes import game_bp
 
 def create_app():
     app = Flask(__name__)
@@ -17,6 +19,9 @@ def create_app():
     
     app.register_blueprint(auth_bp)
     app.register_blueprint(team_bp)
+    app.register_blueprint(game_bp)
+
+    register_cli(app)
     
     #test db connection
     # with app.app_context():
@@ -25,10 +30,5 @@ def create_app():
     #         print(" Database connected")
     #     except Exception as e:
     #         print(" Database connection failed:", e)
-
-
-    @app.route("/health")
-    def health():
-        return {"status": "ok"}
 
     return app

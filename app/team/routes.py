@@ -3,6 +3,9 @@ from flask import Blueprint, request, g, abort
 from app.extensions import db
 from app.utils.decorators import firebase_required
 from app.models import Team, User
+from app.models import TeamProgress, Level
+from datetime import datetime
+
 
 team_bp = Blueprint("team", __name__, url_prefix="/team")
 
@@ -34,6 +37,20 @@ def create_team():
     user.team_id = team.id
     user.role = "leader"
 
+    # Initialize level 1 progress
+    level1 = Level.query.filter_by(level_number=1, is_active=True).first()
+
+    if not level1:
+        abort(500, "Level 1 not configured")
+
+    progress = TeamProgress(
+        team_id=team.id,
+        level_id=level1.id,
+        status="unlocked",
+        unlocked_at=datetime.utcnow(),
+    )
+
+    db.session.add(progress)
     db.session.commit()
 
     return {
